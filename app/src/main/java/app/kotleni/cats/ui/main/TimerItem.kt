@@ -115,7 +115,7 @@ fun TimerItem(timer: Timer, onItemSelected: () -> Unit, onItemRemoved: () -> Uni
                         modifier = Modifier.padding(8.dp)
                     ) {
                         Text(modifier = Modifier.padding(0.dp), text = timer.name, fontWeight = FontWeight.Bold)
-                        Text(modifier = Modifier.padding(0.dp), text = "Total work time: ${timer.totalWorkTime.toInt().toTimeString()}")
+                        Text(modifier = Modifier.padding(0.dp), text = "Work ${timer.workTime / 60} and brake ${timer.shortBreakTime / 60}")
                     }
                 }
             }
