@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import app.kotleni.cats.TimerState
 import app.kotleni.cats.toTimeString
 import java.util.Timer
 import kotlin.concurrent.schedule
@@ -60,23 +61,17 @@ fun TimerScreen(rootNavController: NavHostController, timerId: Int) {
 
     val timer by viewModel.timer.collectAsState()
 
-    var currentSeconds by remember { mutableIntStateOf(-1) }
-    var timerStage by remember { mutableStateOf(TimerStage.WORK) }
-    var isStarted by remember { mutableStateOf(false) }
-    var isPaused by remember { mutableStateOf(false) }
+    val currentSeconds by viewModel.currentSeconds.collectAsState()
+    val timerStage by viewModel.timerStage.collectAsState()
+    val timerState by viewModel.timerState.collectAsState()
 
-    val currentStartTime = (if(timerStage == TimerStage.WORK) timer?.workTime else timer?.shortBreakTime) ?: 0
+    val currentStartTime = (if(timerStage == TimerStage.WORK) timer?.workTime else timer?.shortBreakTime) ?: 1
     val animatedPercentage by animateFloatAsState(
         targetValue = (currentSeconds.toFloat() / currentStartTime.toFloat()) * 100f,
         animationSpec = tween(),
         label = "animatedPercentage"
     )
     val timeName = if(timerStage == TimerStage.WORK) "Work time" else "Break time"
-
-    // Need and can set currentSeconds
-    if(currentSeconds == -1 && timer != null) {
-        currentSeconds = currentStartTime ?: -1
-    }
 
     Scaffold(
         topBar = {
@@ -156,38 +151,33 @@ fun TimerScreen(rootNavController: NavHostController, timerId: Int) {
                 }
             }
 
-            // Spacer(modifier = Modifier.height(16.dp))
-
             Row {
-                if(isStarted) {
-                    if(isPaused) {
+                when(timerState) {
+                    TimerState.STOPPED -> {
                         Button(modifier = Modifier.padding(8.dp), onClick = {
-                            isPaused = false
+                            viewModel.start()
+                        }) {
+                            Text(text = "Start")
+                        }
+                    }
+                    TimerState.PAUSED -> {
+                        Button(modifier = Modifier.padding(8.dp), onClick = {
+                            viewModel.resume()
                         }) {
                             Text(text = "Resume")
                         }
-                    } else {
+                    }
+                    TimerState.STARTED -> {
                         Button(modifier = Modifier.padding(8.dp), onClick = {
-                            isPaused = true
+                            viewModel.pause()
                         }) {
                             Text(text = "Pause")
                         }
                     }
-                } else {
-                    Button(modifier = Modifier.padding(8.dp), onClick = {
-                        currentSeconds = -1 // Set current seconds to target
-                        isStarted = true
-                        //viewModel.showPermanentNotification("Timer is started", "")
-                    }) {
-                        Text(text = "Start")
-                    }
                 }
 
                 Button(modifier = Modifier.padding(8.dp), onClick = {
-                    isStarted = false
-                    timerStage = if(timerStage == TimerStage.WORK) TimerStage.BREAK else TimerStage.WORK
-                    currentSeconds = -1 // Set current seconds to target
-                    viewModel.closePermanentNotification()
+                    viewModel.nextTimerStage()
                 }) {
                     Text(text = "Skip")
                 }
@@ -209,28 +199,7 @@ fun TimerScreen(rootNavController: NavHostController, timerId: Int) {
     }
 
     LaunchedEffect(key1 = timerId) {
+        //viewModel.bindToService()
         viewModel.loadTimer(timerId.toLong())
-
-        Timer().schedule(0, 1_000) {
-            if(isStarted && !isPaused && currentSeconds > 0) {
-                currentSeconds -= 1
-
-                val timeName = if(timerStage == TimerStage.WORK) "Work time" else "Break time"
-                val currentStartTime = (if(timerStage == TimerStage.WORK) timer?.workTime else timer?.shortBreakTime) ?: 0
-
-                viewModel.showPermanentNotification(timeName, "Time left ${currentSeconds.toTimeString()}")
-
-                if(currentSeconds == 0) {
-                    viewModel.adjustTimerStats(timerStage, currentStartTime)
-
-                    isStarted = false
-                    timerStage = if(timerStage == TimerStage.WORK) TimerStage.BREAK else TimerStage.WORK
-                    currentSeconds -= 1
-
-                    viewModel.closePermanentNotification()
-                    viewModel.showAlarmNotification("$timeName is ended", "Press here to open app")
-                }
-            }
-        }.run()
     }
 }
