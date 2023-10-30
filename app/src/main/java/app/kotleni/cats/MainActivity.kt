@@ -28,14 +28,6 @@ class MainActivity : ComponentActivity() {
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        val notificationManager = getSystemService(NotificationManager::class.java)
-        if (!notificationManager.areNotificationsEnabled()) {
-            // Notifications are not enabled, so request the permission.
-            val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
-            intent.putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
-            startActivity(intent)
-        }
-
         setContent {
             CatsTheme {
                 Surface(
@@ -57,6 +49,18 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val notificationManager = getSystemService(NotificationManager::class.java)
+        if (!notificationManager.areNotificationsEnabled()) {
+            // Notifications are not enabled, so request the permission.
+            val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
+            startActivity(intent)
         }
     }
 }
