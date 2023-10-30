@@ -59,6 +59,7 @@ fun TimerScreen(rootNavController: NavHostController, timerId: Int) {
     var currentSeconds by remember { mutableIntStateOf(-1) }
     var timerStage by remember { mutableStateOf(TimerStage.WORK) }
     var isStarted by remember { mutableStateOf(false) }
+    var isPaused by remember { mutableStateOf(false) }
 
     val currentStartTime = (if(timerStage == TimerStage.WORK) timer?.workTime else timer?.shortBreakTime) ?: 0
     val animatedPercentage by animateFloatAsState(
@@ -155,11 +156,18 @@ fun TimerScreen(rootNavController: NavHostController, timerId: Int) {
 
             Row {
                 if(isStarted) {
-                    Button(modifier = Modifier.padding(8.dp), onClick = {
-                        isStarted = false
-                        viewModel.closePermanentNotification()
-                    }) {
-                        Text(text = "Pause")
+                    if(isPaused) {
+                        Button(modifier = Modifier.padding(8.dp), onClick = {
+                            isPaused = false
+                        }) {
+                            Text(text = "Resume")
+                        }
+                    } else {
+                        Button(modifier = Modifier.padding(8.dp), onClick = {
+                            isPaused = true
+                        }) {
+                            Text(text = "Pause")
+                        }
                     }
                 } else {
                     Button(modifier = Modifier.padding(8.dp), onClick = {
@@ -187,7 +195,7 @@ fun TimerScreen(rootNavController: NavHostController, timerId: Int) {
         viewModel.loadTimer(timerId.toLong())
 
         Timer().schedule(0, 1_000) {
-            if(isStarted && currentSeconds > 0) {
+            if(isStarted && !isPaused && currentSeconds > 0) {
                 currentSeconds -= 1
 
                 val timeName = if(timerStage == TimerStage.WORK) "Work time" else "Break time"
