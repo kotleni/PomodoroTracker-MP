@@ -65,6 +65,8 @@ fun TimerScreen(rootNavController: NavHostController, timerId: Int) {
     val timerStage by viewModel.timerStage.collectAsState()
     val timerState by viewModel.timerState.collectAsState()
 
+    var isShowWarningDialog by remember { mutableStateOf(false) }
+
     val currentStartTime = (if(timerStage == TimerStage.WORK) timer?.workTime else timer?.shortBreakTime) ?: 1
     val animatedPercentage by animateFloatAsState(
         targetValue = (currentSeconds.toFloat() / currentStartTime.toFloat()) * 100f,
@@ -72,6 +74,16 @@ fun TimerScreen(rootNavController: NavHostController, timerId: Int) {
         label = "animatedPercentage"
     )
     val timeName = if(timerStage == TimerStage.WORK) "Work time" else "Break time"
+
+    if(isShowWarningDialog) {
+        TimerExitWarningDialog(
+            onPositive = {
+                viewModel.resetServiceIsNotStarted()
+                rootNavController.popBackStack()
+            },
+            onNegative = { isShowWarningDialog = false }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -81,8 +93,12 @@ fun TimerScreen(rootNavController: NavHostController, timerId: Int) {
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-                        viewModel.resetServiceIsNotStarted()
-                        rootNavController.popBackStack()
+                        if(timerState == TimerState.PAUSED) {
+                            isShowWarningDialog = true
+                        } else {
+                            viewModel.resetServiceIsNotStarted()
+                            rootNavController.popBackStack()
+                        }
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
