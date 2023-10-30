@@ -28,7 +28,7 @@ class MainViewModel @Inject constructor(
     fun createTimer(name: String, iconId: Int, workTime: Int, sbrakeTime: Int, lbrakeTime: Int) = viewModelScope.launch {
         withContext(Dispatchers.IO) {
             val timer = Timer(
-                id = timers.value.size.toLong(),
+                //id = timers.value.size.toLong(),
                 name = name,
                 iconId = iconId,
                 totalWorkTime = 0,
@@ -38,6 +38,13 @@ class MainViewModel @Inject constructor(
                 longBreakTime = lbrakeTime
             )
             timersRepository.addTimer(timer)
+        }
+        loadTimers()
+    }
+
+    fun removeTimer(timer: Timer) = viewModelScope.launch {
+        withContext(Dispatchers.IO) {
+            timersRepository.removeTimer(timer)
         }
         loadTimers()
     }

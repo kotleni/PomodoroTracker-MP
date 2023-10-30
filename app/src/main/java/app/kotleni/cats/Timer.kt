@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Timer(
-    @PrimaryKey val id: Long,
+    @PrimaryKey(true) val id: Long = 0,
     @ColumnInfo("name") val name: String,
     @ColumnInfo("iconId") var iconId: Int,
     @ColumnInfo("totalWorkTime") var totalWorkTime: Long,
