@@ -41,6 +41,7 @@ fun MainScreen(
     val timers by viewModel.timers.collectAsState()
 
     var isShowCreateDialog by remember { mutableStateOf(false) }
+    val activeTimer by viewModel.activeTimer.collectAsState()
 
     val lazyListState = rememberLazyListState()
 
@@ -68,6 +69,7 @@ fun MainScreen(
                 timers.forEach {
                     TimerItem(
                         timer = it,
+                        isActive = it.id == activeTimer?.id,
                         onItemSelected = {
                             rootNavController.navigate("timer/${it.id}")
                         },
@@ -92,7 +94,12 @@ fun MainScreen(
         }
     }
 
+    SideEffect {
+        viewModel.loadActiveTimer()
+    }
+
     LaunchedEffect(key1 = "main") {
+        viewModel.bindToService()
         viewModel.loadTimers()
     }
 }

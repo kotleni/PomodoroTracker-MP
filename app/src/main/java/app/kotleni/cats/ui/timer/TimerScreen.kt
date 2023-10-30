@@ -80,7 +80,10 @@ fun TimerScreen(rootNavController: NavHostController, timerId: Int) {
                     Text(text = timer?.name ?: "Timer")
                 },
                 navigationIcon = {
-                    IconButton(onClick = { rootNavController.popBackStack() }) {
+                    IconButton(onClick = {
+                        viewModel.resetServiceIsNotStarted()
+                        rootNavController.popBackStack()
+                    }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = ""

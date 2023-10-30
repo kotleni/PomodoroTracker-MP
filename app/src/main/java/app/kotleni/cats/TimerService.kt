@@ -131,13 +131,15 @@ class TimerService : Service() {
         notifyStateChanged()
     }
 
-    fun setTimer(timer: Timer) {
+    fun setTimer(timer: Timer?) {
         this.timer = timer
 
-        // Notify all updated data
-        notifyStageChanged()
-        notifyStateChanged()
-        resetTime()
+        if(timer != null) {
+            // Notify all updated data
+            notifyStageChanged()
+            notifyStateChanged()
+            resetTime()
+        }
     }
 
     fun setStage(stage: TimerStage) {
@@ -151,5 +153,9 @@ class TimerService : Service() {
 
     fun setListener(listener: TimerListener?) {
         this.listener = listener
+    }
+
+    fun getTimer(): Timer? {
+        return timer
     }
 }

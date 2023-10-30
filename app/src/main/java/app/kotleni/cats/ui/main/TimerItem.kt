@@ -36,16 +36,15 @@ import app.kotleni.cats.toTimeString
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun TimerItem(timer: Timer, onItemSelected: () -> Unit, onItemRemoved: () -> Unit) {
+fun TimerItem(timer: Timer, isActive: Boolean, onItemSelected: () -> Unit, onItemRemoved: () -> Unit) {
     val dismissState = rememberDismissState(
         initialValue = DismissValue.Default,
         confirmValueChange = {
-            if (it == DismissValue.DismissedToStart) {
+            if (it == DismissValue.DismissedToStart && !isActive) {
                 onItemRemoved()
-                false
-            } else {
-                true
             }
+
+            false
         }
     )
 
@@ -114,7 +113,11 @@ fun TimerItem(timer: Timer, onItemSelected: () -> Unit, onItemRemoved: () -> Uni
                     Column(
                         modifier = Modifier.padding(8.dp)
                     ) {
-                        Text(modifier = Modifier.padding(0.dp), text = timer.name, fontWeight = FontWeight.Bold)
+                        Row {
+                            Text(modifier = Modifier.padding(0.dp), text = timer.name, fontWeight = FontWeight.Bold)
+                            if(isActive)
+                            Text(modifier = Modifier.padding(start = 8.dp), text = "Active", color = MaterialTheme.colorScheme.primary)
+                        }
                         Text(modifier = Modifier.padding(0.dp), text = "Work ${timer.workTime / 60} min and brake ${timer.shortBreakTime / 60} min")
                     }
                 }

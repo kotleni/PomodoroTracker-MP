@@ -85,6 +85,15 @@ class TimerViewModel @Inject constructor(
         _timerStage.value = stage
     }
 
+    fun resetServiceIsNotStarted() {
+        if(timerState.value != TimerState.STARTED) {
+            service?.stop()
+            service?.setTimer(null)
+            service?.setListener(null)
+            service = null
+        }
+    }
+
     fun bindToService() {
         Intent(context, TimerService::class.java).also { intent ->
             context.startService(intent)
