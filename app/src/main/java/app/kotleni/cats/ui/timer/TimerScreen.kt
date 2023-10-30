@@ -7,18 +7,22 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -186,6 +190,19 @@ fun TimerScreen(rootNavController: NavHostController, timerId: Int) {
                     viewModel.closePermanentNotification()
                 }) {
                     Text(text = "Skip")
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            if(timer != null) {
+                Column {
+                    SuggestionChip(onClick = { }, label = {
+                        Text(text = "Total work time: ${timer!!.totalWorkTime / 60} min")
+                    })
+                    SuggestionChip(onClick = { }, label = {
+                        Text(text = "Total break time: ${timer!!.totalBreakTime / 60} min")
+                    })
                 }
             }
         }
