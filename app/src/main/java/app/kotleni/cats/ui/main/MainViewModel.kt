@@ -33,9 +33,9 @@ class MainViewModel @Inject constructor(
                 iconId = iconId,
                 totalWorkTime = 0,
                 totalBreakTime = 0,
-                workTime = workTime,
-                shortBreakTime = sbrakeTime,
-                longBreakTime = lbrakeTime
+                workTime = workTime * 60, // in minutes
+                shortBreakTime = sbrakeTime * 60, // in minutes
+                longBreakTime = lbrakeTime * 60 // in minutes
             )
             timersRepository.addTimer(timer)
         }
