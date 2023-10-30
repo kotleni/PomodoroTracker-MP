@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import kotlin.random.Random
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -26,16 +27,18 @@ class MainViewModel @Inject constructor(
     }
 
     fun createTimer(name: String, iconId: Int, workTime: Int, sbrakeTime: Int, lbrakeTime: Int) = viewModelScope.launch {
+        val isDebugSecs = name.startsWith("debug: ")
+
         withContext(Dispatchers.IO) {
             val timer = Timer(
                 //id = timers.value.size.toLong(),
-                name = name,
+                name = name.removePrefix("debug: "),
                 iconId = iconId,
-                totalWorkTime = 0,
-                totalBreakTime = 0,
-                workTime = workTime * 60, // in minutes
-                shortBreakTime = sbrakeTime * 60, // in minutes
-                longBreakTime = lbrakeTime * 60 // in minutes
+                totalWorkTime = if(isDebugSecs) Random.nextLong(0, 9999) else 0,
+                totalBreakTime = if(isDebugSecs) Random.nextLong(0, 999) else 0,
+                workTime = if(isDebugSecs) workTime else workTime * 60, // in minutes
+                shortBreakTime = if(isDebugSecs) sbrakeTime else sbrakeTime * 60, // in minutes
+                longBreakTime = if(isDebugSecs) lbrakeTime else lbrakeTime * 60 // in minutes
             )
             timersRepository.addTimer(timer)
         }
