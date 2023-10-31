@@ -1,12 +1,10 @@
 package app.kotleni.pomodoro
 
-import java.util.TimerTask
-import kotlin.concurrent.schedule
-import java.util.Timer as JavaTimer
+import platform.Foundation.NSTimer
+import platform.Foundation.NSTimer.Companion.scheduledTimerWithTimeInterval
 
 class TimerServiceImpl : TimerService {
-    private val jtimer = JavaTimer()
-    private var timerTask: TimerTask? = null
+    //private val nsTimer = NSTimer()
     private var listener: TimerListener? = null
 
     private var state = TimerState.STOPPED
@@ -15,15 +13,16 @@ class TimerServiceImpl : TimerService {
     private var timer: Timer? = null
 
     init {
-        timerTask = jtimer.schedule(0, 1_000) { onTimerTick() }
-        timerTask?.run()
+        scheduledTimerWithTimeInterval(1.0, true) { nsTimer ->
+            onTimerTick()
+        }
     }
 
     private fun onTimerTick() {
         if(state == TimerState.STARTED && currentSeconds > 0) {
             currentSeconds -= 1
 
-            val timeName = if(stage == TimerStage.WORK) "Work time" else "Break time"
+            // val timeName = if(stage == TimerStage.WORK) "Work time" else "Break time"
             //notificationsHelper?.showPermanentNotification(timeName, "Time left ${currentSeconds.toTimeString()}")
 
             notifyTimeChanged()

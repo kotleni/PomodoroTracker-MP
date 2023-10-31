@@ -4,7 +4,7 @@ import java.util.TimerTask
 import kotlin.concurrent.schedule
 import java.util.Timer as JavaTimer
 
-actual class TimerServiceImpl : TimerService {
+class TimerServiceImpl : TimerService {
     private val jtimer = JavaTimer()
     private var timerTask: TimerTask? = null
     private var listener: TimerListener? = null
