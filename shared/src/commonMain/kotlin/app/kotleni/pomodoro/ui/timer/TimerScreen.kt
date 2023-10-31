@@ -1,5 +1,6 @@
 package app.kotleni.pomodoro.ui.timer
 
+import PlatformType
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
@@ -44,6 +45,7 @@ import app.kotleni.pomodoro.toTimeString
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import getPatformType
 
 class TimerScreen(val timerId: Int) : Screen {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -124,6 +126,7 @@ class TimerScreen(val timerId: Int) : Screen {
                         val radius = canvasSize / 2.5f
                         val centerX = size.width / 2
                         val centerY = size.height / 2
+                        val strokeWidth = if(getPatformType() == PlatformType.DESKTOP) 8f else 18f
 
                         // Calculate the start and sweep angles
                         val startAngle = 0f
@@ -136,7 +139,7 @@ class TimerScreen(val timerId: Int) : Screen {
                             useCenter = false,
                             topLeft = Offset(centerX - radius, centerY - radius),
                             size = Size(radius * 2, radius * 2),
-                            style = Stroke(20f)  // Adjust the stroke width as needed
+                            style = Stroke(strokeWidth)  // Adjust the stroke width as needed
                         )
 
                         drawArc(
@@ -146,7 +149,7 @@ class TimerScreen(val timerId: Int) : Screen {
                             useCenter = false,
                             topLeft = Offset(centerX - radius, centerY - radius),
                             size = Size(radius * 2, radius * 2),
-                            style = Stroke(20f)  // Adjust the stroke width as needed
+                            style = Stroke(strokeWidth)  // Adjust the stroke width as needed
                         )
                     }
 
