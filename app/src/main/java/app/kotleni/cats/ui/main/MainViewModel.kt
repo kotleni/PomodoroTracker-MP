@@ -52,7 +52,6 @@ class MainViewModel @Inject constructor(
 
     fun bindToService() {
         Intent(context, TimerService::class.java).also { intent ->
-            //context.startService(intent)
             context.bindService(intent, connection, Context.BIND_AUTO_CREATE)
         }
     }
@@ -68,11 +67,11 @@ class MainViewModel @Inject constructor(
     }
 
     fun createTimer(name: String, iconId: Int, workTime: Int, sbrakeTime: Int, lbrakeTime: Int) = viewModelScope.launch {
+        // Debug purpose, if started with prefix 'debug: ' use seconds instead of minutes
         val isDebugSecs = name.startsWith("debug: ")
 
         withContext(Dispatchers.IO) {
             val timer = Timer(
-                //id = timers.value.size.toLong(),
                 name = name.removePrefix("debug: "),
                 iconId = iconId,
                 totalWorkTime = if(isDebugSecs) Random.nextLong(0, 9999) else 0,

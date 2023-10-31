@@ -87,9 +87,11 @@ class TimerViewModel @Inject constructor(
 
     fun resetServiceIsNotStarted() {
         if(timerState.value != TimerState.STARTED) {
+            // Remove listener first, because events not needed
+            service?.setListener(null)
+
             service?.stop()
             service?.setTimer(null)
-            service?.setListener(null)
             service = null
         }
     }
