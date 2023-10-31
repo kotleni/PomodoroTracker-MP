@@ -13,7 +13,7 @@ import app.kotleni.cats.TimerListener
 import app.kotleni.cats.TimerService
 import app.kotleni.cats.TimerState
 import app.kotleni.cats.repositories.TimersRepository
-import app.kotleni.cats.services.NotificationService
+import app.kotleni.cats.helpers.NotificationsHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -27,7 +27,7 @@ import javax.inject.Inject
 class TimerViewModel @Inject constructor(
     @ApplicationContext val context: Context,
     val timersRepository: TimersRepository,
-    val notificationService: NotificationService
+    val notificationsHelper: NotificationsHelper
 ): ViewModel(), TimerListener {
     private var service: TimerService? = null
 

@@ -4,11 +4,8 @@ import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
-import android.os.IInterface
-import android.os.Parcel
-import app.kotleni.cats.services.NotificationService
+import app.kotleni.cats.helpers.NotificationsHelper
 import app.kotleni.cats.ui.timer.TimerStage
-import java.io.FileDescriptor
 import java.util.Timer as JavaTimer
 import java.util.TimerTask
 import kotlin.concurrent.schedule
@@ -34,7 +31,7 @@ class TimerService : Service() {
     private var binder: Binder? = null
     private var listener: TimerListener? = null
 
-    private var notificationService: NotificationService? = null
+    private var notificationsHelper: NotificationsHelper? = null
 
     private var state = TimerState.STOPPED
     private var stage = TimerStage.WORK
@@ -44,7 +41,7 @@ class TimerService : Service() {
     override fun onCreate() {
         super.onCreate()
 
-        notificationService = NotificationService(applicationContext)
+        notificationsHelper = NotificationsHelper(applicationContext)
 
         timerTask = jtimer.schedule(0, 1_000) { onTimerTick() }
         timerTask?.run()
@@ -69,15 +66,15 @@ class TimerService : Service() {
             currentSeconds -= 1
 
             val timeName = if(stage == TimerStage.WORK) "Work time" else "Break time"
-            notificationService?.showPermanentNotification(timeName, "Time left ${currentSeconds.toTimeString()}")
+            notificationsHelper?.showPermanentNotification(timeName, "Time left ${currentSeconds.toTimeString()}")
 
             notifyTimeChanged()
 
             if(currentSeconds == 0) {
                 stop()
 
-                notificationService?.closePermanentNotification()
-                notificationService?.showAlarmNotification("$timeName is ended", "Press here to open app")
+                notificationsHelper?.closePermanentNotification()
+                notificationsHelper?.showAlarmNotification("$timeName is ended", "Press here to open app")
             }
         }
     }
@@ -110,7 +107,7 @@ class TimerService : Service() {
         state = TimerState.STOPPED
         notifyStateChanged()
 
-        notificationService?.closePermanentNotification()
+        notificationsHelper?.closePermanentNotification()
     }
 
     fun start() {
@@ -123,7 +120,7 @@ class TimerService : Service() {
         state = TimerState.PAUSED
         notifyStateChanged()
 
-        notificationService?.closePermanentNotification()
+        notificationsHelper?.closePermanentNotification()
     }
 
     fun resume() {

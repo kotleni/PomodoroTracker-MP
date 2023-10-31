@@ -1,6 +1,5 @@
-package app.kotleni.cats.services
+package app.kotleni.cats.helpers
 
-import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -14,7 +13,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 // MARK: Targeting S+ (version 31 and above) requires that one of FLAG_IMMUTABLE or FLAG_MUTABLE be specified when creating a PendingIntent.
-class NotificationService @Inject constructor(@ApplicationContext val context: Context) {
+class NotificationsHelper @Inject constructor(@ApplicationContext val context: Context) {
     private val notificationManager: NotificationManager =
         context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
