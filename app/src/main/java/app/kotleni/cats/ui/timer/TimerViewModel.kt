@@ -26,8 +26,8 @@ import javax.inject.Inject
 @HiltViewModel
 class TimerViewModel @Inject constructor(
     @ApplicationContext val context: Context,
-    val timersRepository: TimersRepository,
-    val notificationsHelper: NotificationsHelper
+    private val timersRepository: TimersRepository,
+    private val notificationsHelper: NotificationsHelper
 ): ViewModel(), TimerListener {
     private var service: TimerService? = null
 
@@ -60,7 +60,6 @@ class TimerViewModel @Inject constructor(
     }
 
     override fun onTimeUpdated(timer: Timer, secs: Int) {
-        // Log.d("TimerViewModel", "onTimeUpdated: $secs")
         _currentSeconds.value = secs
     }
 
@@ -114,17 +113,19 @@ class TimerViewModel @Inject constructor(
         service?.setStage(if(timerStage.value == TimerStage.WORK) TimerStage.BREAK else TimerStage.WORK)
     }
 
-    fun adjustTimerStats(stage: TimerStage, seconds: Int) = viewModelScope.launch {
-        if(timer.value == null) return@launch
+    private fun adjustTimerStats(stage: TimerStage, seconds: Int) = viewModelScope.launch {
+        val currentTimer = timer.value
+        if (currentTimer != null) {
+            val updatedTimer = when (stage) {
+                TimerStage.WORK -> currentTimer.copy(totalWorkTime = currentTimer.totalWorkTime + seconds)
+                TimerStage.BREAK -> currentTimer.copy(totalBreakTime = currentTimer.totalBreakTime + seconds)
+            }
 
-        if(stage == TimerStage.WORK)
-            timer.value!!.totalWorkTime += seconds
-        else if(stage == TimerStage.BREAK)
-            timer.value!!.totalBreakTime += seconds
-        Log.d("dsa", timer.value.toString())
+            _timer.value = updatedTimer
 
-        withContext(Dispatchers.IO) {
-            timersRepository.update(timer.value!!)
+            withContext(Dispatchers.IO) {
+                timersRepository.update(updatedTimer)
+            }
         }
     }
 
