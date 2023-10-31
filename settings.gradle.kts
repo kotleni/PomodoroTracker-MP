@@ -1,4 +1,4 @@
-rootProject.name = "MyApplication"
+rootProject.name = "PomodoroTracker"
 
 include(":androidApp")
 include(":shared")
