@@ -24,3 +24,9 @@ fun App() {
         Navigator(MainScreen())
     }
 }
+
+enum class PlatformType {
+    DESKTOP, ANDROID, IOS
+}
+
+expect fun getPatformType(): PlatformType

@@ -1,3 +1,5 @@
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import app.kotleni.pomodoro.di.koinModules
@@ -8,7 +10,12 @@ fun main() = application {
         modules(koinModules)
     }
 
-    Window(onCloseRequest = ::exitApplication) {
+    Window(
+        onCloseRequest = ::exitApplication,
+        onKeyEvent = {
+            false
+        }
+    ) {
         MainView()
     }
 }
