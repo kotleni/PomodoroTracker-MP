@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.kotleni.cats.Timer
 import app.kotleni.cats.TimerService
+import app.kotleni.cats.TimerServiceImpl
 import app.kotleni.cats.repositories.TimersRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -37,7 +38,7 @@ class MainViewModel @Inject constructor(
     private val connection = object : ServiceConnection {
         override fun onServiceConnected(className: ComponentName, binder: IBinder) {
             Log.d("MainViewModel", "onServiceConnected: ${className.className}")
-            val binder = binder as TimerService.TimerBinder
+            val binder = binder as TimerServiceImpl.TimerBinder
             service = binder.getService()
 
             loadActiveTimer()

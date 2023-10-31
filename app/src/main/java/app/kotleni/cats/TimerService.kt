@@ -21,9 +21,27 @@ interface TimerListener {
     fun onStageUpdated(timer: Timer, stage: TimerStage)
 }
 
-class TimerService : Service() {
+interface TimerService {
+    fun stop()
+
+    fun start()
+
+    fun pause()
+
+    fun resume()
+
+    fun setTimer(timer: Timer?)
+
+    fun setStage(stage: TimerStage)
+
+    fun setListener(listener: TimerListener?)
+
+    fun getTimer(): Timer?
+}
+
+class TimerServiceImpl : Service(), TimerService {
     inner class TimerBinder : Binder() {
-        fun getService(): TimerService = this@TimerService
+        fun getService(): TimerService = this@TimerServiceImpl
     }
 
     private val jtimer = JavaTimer()
@@ -103,32 +121,32 @@ class TimerService : Service() {
         notifyTimeChanged()
     }
 
-    fun stop() {
+    override fun stop() {
         state = TimerState.STOPPED
         notifyStateChanged()
 
         notificationsHelper?.closePermanentNotification()
     }
 
-    fun start() {
+    override fun start() {
         resetTime()
         state = TimerState.STARTED
         notifyStateChanged()
     }
 
-    fun pause() {
+    override fun pause() {
         state = TimerState.PAUSED
         notifyStateChanged()
 
         notificationsHelper?.closePermanentNotification()
     }
 
-    fun resume() {
+    override fun resume() {
         state = TimerState.STARTED
         notifyStateChanged()
     }
 
-    fun setTimer(timer: Timer?) {
+    override fun setTimer(timer: Timer?) {
         this.timer = timer
 
         if(timer != null) {
@@ -139,7 +157,7 @@ class TimerService : Service() {
         }
     }
 
-    fun setStage(stage: TimerStage) {
+    override fun setStage(stage: TimerStage) {
         if(state != TimerState.STOPPED)
             stop()
 
@@ -148,11 +166,11 @@ class TimerService : Service() {
         notifyStageChanged()
     }
 
-    fun setListener(listener: TimerListener?) {
+    override fun setListener(listener: TimerListener?) {
         this.listener = listener
     }
 
-    fun getTimer(): Timer? {
+    override fun getTimer(): Timer? {
         return timer
     }
 }

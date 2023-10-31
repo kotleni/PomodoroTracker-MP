@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import app.kotleni.cats.Timer
 import app.kotleni.cats.TimerListener
 import app.kotleni.cats.TimerService
+import app.kotleni.cats.TimerServiceImpl
 import app.kotleni.cats.TimerState
 import app.kotleni.cats.repositories.TimersRepository
 import app.kotleni.cats.helpers.NotificationsHelper
@@ -46,7 +47,7 @@ class TimerViewModel @Inject constructor(
     private val connection = object : ServiceConnection {
         override fun onServiceConnected(className: ComponentName, binder: IBinder) {
             Log.d("TimerViewModel", "onServiceConnected: ${className.className}")
-            val binder = binder as TimerService.TimerBinder
+            val binder = binder as TimerServiceImpl.TimerBinder
             service = binder.getService()
 
             service?.setListener(this@TimerViewModel)
