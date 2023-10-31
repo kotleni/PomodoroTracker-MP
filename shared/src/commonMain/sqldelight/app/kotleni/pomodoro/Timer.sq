@@ -1,0 +1,38 @@
+-- Define a schema for the Timer table
+CREATE TABLE Timer (
+    id INTEGER NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    iconId INTEGER NOT NULL,
+    totalWorkTime INTEGER NOT NULL,
+    totalBreakTime INTEGER NOT NULL,
+    shortBreakTime INTEGER NOT NULL,
+    longBreakTime INTEGER NOT NULL,
+    workTime INTEGER NOT NULL
+);
+
+-- SELECT All Rows
+selectAllTimers:
+SELECT *
+FROM Timer;
+
+-- INSERT a New Row
+insertTimer:
+INSERT INTO Timer (name, iconId, totalWorkTime, totalBreakTime, shortBreakTime, longBreakTime, workTime)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+-- UPDATE an Existing Row
+updateTimer:
+UPDATE Timer
+SET name = ?,
+    iconId = ?,
+    totalWorkTime = ?,
+    totalBreakTime = ?,
+    shortBreakTime = ?,
+    longBreakTime = ?,
+    workTime = ?
+WHERE id = ?;
+
+-- DELETE a Row
+deleteTimer:
+DELETE FROM Timer
+WHERE id = ?;

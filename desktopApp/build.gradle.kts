@@ -12,6 +12,9 @@ kotlin {
             dependencies {
                 implementation(compose.desktop.currentOs)
                 implementation(project(":shared"))
+
+                val koinVersion = extra["koin.version"] as String
+                implementation("io.insert-koin:koin-core:$koinVersion")
             }
         }
     }

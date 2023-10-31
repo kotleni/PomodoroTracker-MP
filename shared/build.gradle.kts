@@ -28,9 +28,18 @@ kotlin {
             dependencies {
                 implementation(compose.runtime)
                 implementation(compose.foundation)
-                implementation(compose.material)
+                implementation(compose.material3)
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.components.resources)
+
+                val voyagerVersion = "1.0.0-rc05"
+                implementation("cafe.adriel.voyager:voyager-navigator:$voyagerVersion")
+                implementation("cafe.adriel.voyager:voyager-koin:$voyagerVersion")
+
+                implementation("app.cash.sqldelight:coroutines-extensions:2.0.0")
+
+                val koinVersion = extra["koin.version"] as String
+                implementation("io.insert-koin:koin-core:$koinVersion")
             }
         }
         val androidMain by getting {
@@ -40,6 +49,9 @@ kotlin {
                 api("androidx.core:core-ktx:1.10.1")
 
                 implementation("app.cash.sqldelight:android-driver:2.0.0")
+
+                val koinVersion = extra["koin.version"] as String
+                implementation("io.insert-koin:koin-android:$koinVersion")
             }
         }
         val iosX64Main by getting
@@ -59,7 +71,7 @@ kotlin {
             dependencies {
                 implementation(compose.desktop.common)
 
-                implementation("app.cash.sqldelight:native-driver:2.0.0")
+                implementation("app.cash.sqldelight:sqlite-driver:2.0.0")
             }
         }
     }
