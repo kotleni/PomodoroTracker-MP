@@ -7,5 +7,4 @@ import org.koin.dsl.module
 
 val androidModule: Module = module {
     factory { DatabaseDriverFactory(androidContext()) }
-    factory { TimerServiceFactory() }
 }
