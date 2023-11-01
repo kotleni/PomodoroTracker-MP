@@ -1,10 +1,10 @@
 package app.kotleni.pomodoro.ui.timer
 
+import TimerServiceImpl
 import app.kotleni.pomodoro.DatabaseDriverFactory
 import app.kotleni.pomodoro.Timer
 import app.kotleni.pomodoro.TimerListener
 import app.kotleni.pomodoro.TimerService
-import app.kotleni.pomodoro.TimerServiceFactory
 import app.kotleni.pomodoro.TimerStage
 import app.kotleni.pomodoro.TimerState
 import app.kotleni.pomodoro.repositories.TimersRepository
@@ -24,8 +24,8 @@ class TimerViewModel : KoinComponent, TimerListener {
     private val databaseDriverFactory: DatabaseDriverFactory by inject()
     private val timersRepository: TimersRepository = TimersRepositoryImpl(databaseDriverFactory)
 
-    private val timerServiceFactory: TimerServiceFactory by inject()
-    private var service: TimerService? = null
+    //private val timerServiceFactory: TimerServiceFactory by inject()
+    private var service: TimerService = TimerServiceImpl()
 
     private val _timer: MutableStateFlow<Timer?> = MutableStateFlow(null)
     val timer: StateFlow<Timer?> = _timer
@@ -87,12 +87,12 @@ class TimerViewModel : KoinComponent, TimerListener {
 
             service?.stop()
             service?.setTimer(null)
-            service = null
+            //service = null
         }
     }
 
     fun bindToService() {
-        service = timerServiceFactory.createTimerService()
+        //service = timerServiceFactory.createTimerService()
         service?.setListener(this)
         _timer.value?.let { service?.setTimer(it) }
     }

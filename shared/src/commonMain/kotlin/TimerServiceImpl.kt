@@ -1,12 +1,14 @@
-package app.kotleni.pomodoro
 
-import java.util.TimerTask
-import kotlin.concurrent.schedule
-import java.util.Timer as JavaTimer
+import app.kotleni.pomodoro.CoroutineTimer
+import app.kotleni.pomodoro.Timer
+import app.kotleni.pomodoro.TimerListener
+import app.kotleni.pomodoro.TimerService
+import app.kotleni.pomodoro.TimerStage
+import app.kotleni.pomodoro.TimerState
+import org.koin.core.component.KoinComponent
 
-class TimerServiceImpl : TimerService {
-    private val jtimer = JavaTimer()
-    private var timerTask: TimerTask? = null
+class TimerServiceImpl : TimerService, KoinComponent {
+    private var coroutineTimer: CoroutineTimer = CoroutineTimer()
     private var listener: TimerListener? = null
 
     private var state = TimerState.STOPPED
@@ -15,15 +17,17 @@ class TimerServiceImpl : TimerService {
     private var timer: Timer? = null
 
     init {
-        timerTask = jtimer.schedule(0, 1_000) { onTimerTick() }
-        timerTask?.run()
+        coroutineTimer.scheduled(0, 1_000) {
+            onTimerTick()
+        }
+        coroutineTimer.run()
     }
 
     private fun onTimerTick() {
         if(state == TimerState.STARTED && currentSeconds > 0) {
             currentSeconds -= 1
 
-            val timeName = if(stage == TimerStage.WORK) "Work time" else "Break time"
+            // val timeName = if(stage == TimerStage.WORK) "Work time" else "Break time"
             //notificationsHelper?.showPermanentNotification(timeName, "Time left ${currentSeconds.toTimeString()}")
 
             notifyTimeChanged()
@@ -31,8 +35,8 @@ class TimerServiceImpl : TimerService {
             if(currentSeconds == 0) {
                 stop()
 
-               // notificationsHelper?.closePermanentNotification()
-               // notificationsHelper?.showAlarmNotification("$timeName is ended", "Press here to open app")
+                // notificationsHelper?.closePermanentNotification()
+                // notificationsHelper?.showAlarmNotification("$timeName is ended", "Press here to open app")
             }
         }
     }

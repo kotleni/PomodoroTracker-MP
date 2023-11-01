@@ -1,9 +1,9 @@
 package app.kotleni.pomodoro.ui.main
 
+import TimerServiceImpl
 import app.kotleni.pomodoro.DatabaseDriverFactory
 import app.kotleni.pomodoro.Timer
 import app.kotleni.pomodoro.TimerService
-import app.kotleni.pomodoro.TimerServiceFactory
 import app.kotleni.pomodoro.repositories.TimersRepository
 import app.kotleni.pomodoro.repositories.TimersRepositoryImpl
 import kotlinx.coroutines.CoroutineScope
@@ -28,8 +28,8 @@ class MainViewModel : KoinComponent {
     private val _activeTimer: MutableStateFlow<Timer?> = MutableStateFlow(null)
     val activeTimer: StateFlow<Timer?> = _activeTimer
 
-    private val timerServiceFactory: TimerServiceFactory by inject()
-    private var service: TimerService? = null
+    //private val timerServiceFactory: TimerServiceFactory by inject()
+    private var service: TimerService = TimerServiceImpl()
 
     fun loadTimers() = viewModelScope.launch {
         _timers.value = withContext(Dispatchers.IO) {
@@ -38,7 +38,7 @@ class MainViewModel : KoinComponent {
     }
 
     fun bindToService() {
-        service = timerServiceFactory.createTimerService()
+        //service = timerServiceFactory.createTimerService()
         loadActiveTimer()
     }
 
