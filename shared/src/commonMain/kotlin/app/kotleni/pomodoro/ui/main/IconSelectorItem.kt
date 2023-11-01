@@ -19,14 +19,14 @@ fun IconSelectorItem(icon: ImageVector, isSelected: Boolean, onSelected: () -> U
     Box(
         modifier = Modifier
             .padding(8.dp)
-            .clickable {
-                onSelected()
-            }
     ) {
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
                 .background(if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer)
+                .clickable {
+                    onSelected()
+                }
         ) {
             Image(
                 modifier = Modifier
