@@ -1,10 +1,45 @@
 package app.kotleni.pomodoro
 
-import platform.Foundation.NSTimer
-import platform.Foundation.NSTimer.Companion.scheduledTimerWithTimeInterval
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+
+class CoroutineTimer {
+    private val coroutineContext = CoroutineScope(Dispatchers.IO)
+    private var job: Job? = null
+
+    private var callback: (() -> Unit)? = null
+    private var startDelay: Long = 0
+    private var period: Long = 0
+
+    fun scheduled(delay: Long, period: Long, callback: () -> Unit) {
+        this.startDelay = delay
+        this.period = period
+        this.callback = callback
+    }
+
+    fun run() {
+        job = coroutineContext.launch {
+            delay(startDelay)
+
+            while(isActive) {
+                callback?.invoke()
+                delay(period)
+            }
+        }
+    }
+
+    fun stop() {
+        job?.cancel()
+    }
+}
 
 class TimerServiceImpl : TimerService {
-    //private val nsTimer = NSTimer()
+    private var coroutineTimer: CoroutineTimer = CoroutineTimer()
     private var listener: TimerListener? = null
 
     private var state = TimerState.STOPPED
@@ -13,9 +48,10 @@ class TimerServiceImpl : TimerService {
     private var timer: Timer? = null
 
     init {
-        scheduledTimerWithTimeInterval(1.0, true) { nsTimer ->
+        coroutineTimer.scheduled(0, 1_000) {
             onTimerTick()
         }
+        coroutineTimer.run()
     }
 
     private fun onTimerTick() {
