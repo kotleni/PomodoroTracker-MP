@@ -1,8 +1,8 @@
 package app.kotleni.pomodoro.di
 
-import app.kotleni.pomodoro.DatabaseDriverFactory
 import org.koin.core.module.Module
 import org.koin.dsl.module
+import app.kotleni.pomodoro.DatabaseDriverFactory
 
 val desktopModule: Module = module {
     factory { DatabaseDriverFactory() }

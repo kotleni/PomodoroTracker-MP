@@ -12,17 +12,6 @@ kotlin {
 
     jvm("desktop")
 
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "shared"
-            isStatic = true
-        }
-    }
-
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -53,19 +42,6 @@ kotlin {
                 val koinVersion = extra["koin.version"] as String
                 implementation("io.insert-koin:koin-android:$koinVersion")
             }
-        }
-        val iosX64Main by getting
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
-        val iosMain by creating {
-            dependencies {
-                implementation("app.cash.sqldelight:native-driver:2.0.0")
-            }
-
-            dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
         }
         val desktopMain by getting {
             dependencies {

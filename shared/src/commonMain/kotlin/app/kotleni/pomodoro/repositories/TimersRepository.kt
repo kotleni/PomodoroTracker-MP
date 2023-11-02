@@ -1,8 +1,8 @@
 package app.kotleni.pomodoro.repositories
 
 import app.kotleni.pomodoro.Database
-import app.kotleni.pomodoro.DatabaseDriverFactory
 import app.kotleni.pomodoro.Timer
+import app.kotleni.pomodoro.DatabaseDriverFactory
 
 interface TimersRepository {
     suspend fun fetchTimers(): List<Timer>

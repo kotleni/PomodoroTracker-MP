@@ -1,7 +1,6 @@
 package app.kotleni.pomodoro.ui.main
 
 import TimerServiceImpl
-import app.kotleni.pomodoro.DatabaseDriverFactory
 import app.kotleni.pomodoro.Timer
 import app.kotleni.pomodoro.TimerService
 import app.kotleni.pomodoro.repositories.TimersRepository
@@ -16,6 +15,7 @@ import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import kotlin.random.Random
+import app.kotleni.pomodoro.DatabaseDriverFactory
 
 class MainViewModel : KoinComponent {
     private val viewModelScope = CoroutineScope(Dispatchers.Default)

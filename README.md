@@ -1,3 +1,2 @@
 ## PomodoroTracker (experimental branch)
-This branch contains experimental multiplatform (desktop, android and ios) implementation.
-<br><b>Warning!</b> In actual time iOS platform need updates for work.
+This branch contains experimental code of multiplatform desktop and android work time tracker.
