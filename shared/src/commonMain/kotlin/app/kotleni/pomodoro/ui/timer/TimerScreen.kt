@@ -53,24 +53,18 @@ class TimerScreen(val timerId: Int) : Screen {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
-
         val viewModel: TimerViewModel = remember { TimerViewModel() }
-
-        val timer by viewModel.timer.collectAsState()
-
-        val currentSeconds by viewModel.currentSeconds.collectAsState()
-        val timerStage by viewModel.timerStage.collectAsState()
-        val timerState by viewModel.timerState.collectAsState()
+        val uiState by viewModel.uiState.collectAsState()
 
         var isShowWarningDialog by remember { mutableStateOf(false) }
 
-        val currentStartTime = (if(timerStage == TimerStage.WORK) timer?.workTime else timer?.shortBreakTime) ?: 1
+        val currentStartTime = (if(uiState.timerStage == TimerStage.WORK) uiState.timer?.workTime else uiState.timer?.shortBreakTime) ?: 1
         val animatedPercentage by animateFloatAsState(
-            targetValue = (currentSeconds.toFloat() / currentStartTime.toFloat()) * 100f,
+            targetValue = (uiState.currentSeconds.toFloat() / currentStartTime.toFloat()) * 100f,
             animationSpec = tween(),
             label = "animatedPercentage"
         )
-        val timeName = if(timerStage == TimerStage.WORK) "Work time" else "Break time"
+        val timeName = if(uiState.timerStage == TimerStage.WORK) "Work time" else "Break time"
 
         if(isShowWarningDialog) {
             TimerExitWarningDialog(
@@ -87,11 +81,11 @@ class TimerScreen(val timerId: Int) : Screen {
             topBar = {
                 TopAppBar(
                     title = {
-                        Text(text = timer?.name ?: "Timer")
+                        Text(text = uiState.timer?.name ?: "Timer")
                     },
                     navigationIcon = {
                         IconButton(onClick = {
-                            if(timerState == TimerState.PAUSED) {
+                            if(uiState.timerState == TimerState.PAUSED) {
                                 isShowWarningDialog = true
                             } else {
                                 viewModel.resetServiceIsNotStarted()
@@ -160,7 +154,7 @@ class TimerScreen(val timerId: Int) : Screen {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = currentSeconds.toTimeString(),
+                            text = uiState.currentSeconds.toTimeString(),
                             fontWeight = FontWeight.Bold,
                             fontSize = TextUnit(36f, TextUnitType.Sp)
                         )
@@ -172,7 +166,7 @@ class TimerScreen(val timerId: Int) : Screen {
                 }
 
                 Row {
-                    when(timerState) {
+                    when(uiState.timerState) {
                         TimerState.STOPPED -> {
                             Button(modifier = Modifier.padding(8.dp), onClick = {
                                 viewModel.start()
@@ -205,13 +199,13 @@ class TimerScreen(val timerId: Int) : Screen {
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                if(timer != null) {
+                if(uiState.timer != null) {
                     Column {
                         SuggestionChip(onClick = { }, label = {
-                            Text(text = "Total work time: ${timer!!.totalWorkTime / 60} min")
+                            Text(text = "Total work time: ${uiState.timer!!.totalWorkTime / 60} min")
                         })
                         SuggestionChip(onClick = { }, label = {
-                            Text(text = "Total break time: ${timer!!.totalBreakTime / 60} min")
+                            Text(text = "Total break time: ${uiState.timer!!.totalBreakTime / 60} min")
                         })
                     }
                 }
@@ -219,7 +213,6 @@ class TimerScreen(val timerId: Int) : Screen {
         }
 
         LaunchedEffect(key1 = timerId) {
-            //viewModel.bindToService()
             viewModel.loadTimer(timerId.toLong())
         }
     }
