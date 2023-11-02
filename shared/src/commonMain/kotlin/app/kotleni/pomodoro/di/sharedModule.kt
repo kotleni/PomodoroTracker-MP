@@ -4,9 +4,7 @@ import app.kotleni.pomodoro.repositories.TimersRepository
 import app.kotleni.pomodoro.repositories.TimersRepositoryImpl
 import app.kotleni.pomodoro.ui.main.MainViewModel
 import app.kotleni.pomodoro.ui.timer.TimerViewModel
-import app.kotleni.pomodoro.usecases.CreateTimerUseCase
-import app.kotleni.pomodoro.usecases.FetchTimersUseCase
-import app.kotleni.pomodoro.usecases.RemoveTimerUseCase
+import app.kotleni.pomodoro.usecases.*
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -18,7 +16,9 @@ val commonModule: Module = module {
 
     singleOf(::TimersRepositoryImpl) bind TimersRepository::class
 
-    single { CreateTimerUseCase(get()) }
-    single { RemoveTimerUseCase(get()) }
-    single { FetchTimersUseCase(get()) }
+    singleOf(::CreateTimerUseCase)
+    singleOf(::RemoveTimerUseCase)
+    singleOf(::FetchTimersUseCase)
+    singleOf(::LoadTimerByIdUseCase)
+    singleOf(::UpdateTimerUseCase)
 }

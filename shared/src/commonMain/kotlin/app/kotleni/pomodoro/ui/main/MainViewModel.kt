@@ -19,9 +19,9 @@ data class MainUIState(
 )
 
 class MainViewModel(
-    val createTimerUseCase: CreateTimerUseCase,
-    val removeTimerUseCase: RemoveTimerUseCase,
-    val fetchTimersUseCase: FetchTimersUseCase
+    private val createTimerUseCase: CreateTimerUseCase,
+    private val removeTimerUseCase: RemoveTimerUseCase,
+    private val fetchTimersUseCase: FetchTimersUseCase
 ) : ViewModel(), KoinComponent {
     private val _uiState: MutableStateFlow<MainUIState> = MutableStateFlow(MainUIState())
     val uiState: StateFlow<MainUIState> = _uiState

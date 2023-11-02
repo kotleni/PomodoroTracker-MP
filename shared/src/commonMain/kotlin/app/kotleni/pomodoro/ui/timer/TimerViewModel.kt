@@ -1,23 +1,19 @@
 package app.kotleni.pomodoro.ui.timer
 
 import TimerServiceImpl
-import app.kotleni.pomodoro.DatabaseDriverFactory
 import app.kotleni.pomodoro.Timer
 import app.kotleni.pomodoro.TimerListener
 import app.kotleni.pomodoro.TimerService
 import app.kotleni.pomodoro.TimerStage
 import app.kotleni.pomodoro.TimerState
 import app.kotleni.pomodoro.ViewModel
-import app.kotleni.pomodoro.repositories.TimersRepository
-import app.kotleni.pomodoro.repositories.TimersRepositoryImpl
-import kotlinx.coroutines.Dispatchers
+import app.kotleni.pomodoro.usecases.LoadTimerByIdUseCase
+import app.kotleni.pomodoro.usecases.UpdateTimerUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 
 data class TimerUIState(
     val timer: Timer? = null,
@@ -26,14 +22,14 @@ data class TimerUIState(
     val currentSeconds: Int = 0
 )
 
-class TimerViewModel : ViewModel(), KoinComponent, TimerListener {
-    private val databaseDriverFactory: DatabaseDriverFactory by inject()
-    private val timersRepository: TimersRepository = TimersRepositoryImpl(databaseDriverFactory)
-
-    private var service: TimerService = TimerServiceImpl()
-
+class TimerViewModel(
+    private val loadTimerByIdUseCase: LoadTimerByIdUseCase,
+    private val updateTimerUseCase: UpdateTimerUseCase
+) : ViewModel(), KoinComponent, TimerListener {
     private val _uiState: MutableStateFlow<TimerUIState> = MutableStateFlow(TimerUIState())
     val uiState: StateFlow<TimerUIState> = _uiState
+
+    private var service: TimerService = TimerServiceImpl()
 
     override fun onTimeUpdated(timer: Timer, secs: Int) {
         _uiState.update {
@@ -81,14 +77,12 @@ class TimerViewModel : ViewModel(), KoinComponent, TimerListener {
     }
 
     fun loadTimer(timerId: Long) = viewModelScope.launch {
-        val timer = withContext(Dispatchers.IO) {
-            timersRepository.fetchTimers().find { it.id == timerId }
+        loadTimerByIdUseCase(timerId) { newTimer ->
+            _uiState.update {
+                it.copy(timer = newTimer)
+            }
+            bindToService()
         }
-
-        _uiState.update {
-            it.copy(timer = timer)
-        }
-        bindToService()
     }
 
     fun nextTimerStage() {
@@ -108,9 +102,7 @@ class TimerViewModel : ViewModel(), KoinComponent, TimerListener {
                 it.copy(timer = updatedTimer)
             }
 
-            withContext(Dispatchers.IO) {
-                timersRepository.updateTimer(updatedTimer)
-            }
+            updateTimerUseCase(updatedTimer)
         }
     }
 
