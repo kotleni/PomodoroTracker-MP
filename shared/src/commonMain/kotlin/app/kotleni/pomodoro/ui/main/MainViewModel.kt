@@ -6,6 +6,7 @@ import app.kotleni.pomodoro.Timer
 import app.kotleni.pomodoro.TimerService
 import app.kotleni.pomodoro.repositories.TimersRepository
 import app.kotleni.pomodoro.repositories.TimersRepositoryImpl
+import app.kotleni.pomodoro.usecases.CreateTimerUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +16,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import kotlin.random.Random
 
 data class MainUIState(
     val timers: List<Timer> = listOf(),
@@ -23,6 +23,8 @@ data class MainUIState(
 )
 
 class MainViewModel : KoinComponent {
+    private val createTimerUseCase: CreateTimerUseCase by inject()
+
     private val viewModelScope = CoroutineScope(Dispatchers.Default)
     private val databaseDriverFactory: DatabaseDriverFactory by inject()
     private val timersRepository: TimersRepository = TimersRepositoryImpl(databaseDriverFactory)
@@ -51,23 +53,14 @@ class MainViewModel : KoinComponent {
     }
 
     fun createTimer(name: String, iconId: Int, workTime: Int, sbrakeTime: Int, lbrakeTime: Int) = viewModelScope.launch {
-        // Debug purpose, if started with prefix 'debug: ' use seconds instead of minutes
-        val isDebugSecs = name.startsWith("debug: ")
-
-        withContext(Dispatchers.IO) {
-            val timer = Timer(
-                name = name.removePrefix("debug: "),
-                iconId = iconId.toLong(),
-                totalWorkTime = if(isDebugSecs) Random.nextLong(0, 9999) else 0,
-                totalBreakTime = if(isDebugSecs) Random.nextLong(0, 999) else 0,
-                workTime = (if(isDebugSecs) workTime else workTime * 60).toLong(), // in minutes
-                shortBreakTime = (if(isDebugSecs) sbrakeTime else sbrakeTime * 60).toLong(), // in minutes
-                longBreakTime = (if(isDebugSecs) lbrakeTime else lbrakeTime * 60).toLong(), // in minutes
-                id = 0 // automatic
-            )
-            timersRepository.addTimer(timer)
-        }
-        loadTimers()
+        createTimerUseCase(
+            name,
+            iconId,
+            workTime,
+            sbrakeTime,
+            lbrakeTime,
+            ::loadTimers
+        )
     }
 
     fun removeTimer(timer: Timer) = viewModelScope.launch {
