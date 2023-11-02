@@ -1,8 +1,9 @@
 package app.kotleni.pomodoro.repositories
 
 import app.kotleni.pomodoro.Database
-import app.kotleni.pomodoro.Timer
 import app.kotleni.pomodoro.DatabaseDriverFactory
+import app.kotleni.pomodoro.Timer
+import org.koin.core.component.KoinComponent
 
 interface TimersRepository {
     suspend fun fetchTimers(): List<Timer>
@@ -11,7 +12,7 @@ interface TimersRepository {
     suspend fun removeTimer(timer: Timer)
 }
 
-class TimersRepositoryImpl(databaseDriverFactory: DatabaseDriverFactory) : TimersRepository {
+class TimersRepositoryImpl(databaseDriverFactory: DatabaseDriverFactory) : KoinComponent, TimersRepository {
     private val database = Database(databaseDriverFactory.createDriver())
     private val dbQuery = database.timerQueries
 

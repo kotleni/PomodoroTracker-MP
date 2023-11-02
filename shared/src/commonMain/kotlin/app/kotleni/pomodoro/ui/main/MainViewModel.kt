@@ -1,19 +1,17 @@
 package app.kotleni.pomodoro.ui.main
 
 import TimerServiceImpl
-import app.kotleni.pomodoro.DatabaseDriverFactory
 import app.kotleni.pomodoro.Timer
 import app.kotleni.pomodoro.TimerService
-import app.kotleni.pomodoro.repositories.TimersRepository
-import app.kotleni.pomodoro.repositories.TimersRepositoryImpl
 import app.kotleni.pomodoro.usecases.CreateTimerUseCase
+import app.kotleni.pomodoro.usecases.FetchTimersUseCase
+import app.kotleni.pomodoro.usecases.RemoveTimerUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -24,10 +22,10 @@ data class MainUIState(
 
 class MainViewModel : KoinComponent {
     private val createTimerUseCase: CreateTimerUseCase by inject()
+    private val removeTimerUseCase: RemoveTimerUseCase by inject()
+    private val fetchTimersUseCase: FetchTimersUseCase by inject()
 
     private val viewModelScope = CoroutineScope(Dispatchers.Default)
-    private val databaseDriverFactory: DatabaseDriverFactory by inject()
-    private val timersRepository: TimersRepository = TimersRepositoryImpl(databaseDriverFactory)
 
     private val _uiState: MutableStateFlow<MainUIState> = MutableStateFlow(MainUIState())
     val uiState: StateFlow<MainUIState> = _uiState
@@ -35,10 +33,10 @@ class MainViewModel : KoinComponent {
     private var service: TimerService = TimerServiceImpl()
 
     fun loadTimers() = viewModelScope.launch {
-        _uiState.update {
-            it.copy(timers = withContext(Dispatchers.IO) {
-                timersRepository.fetchTimers()
-            })
+        fetchTimersUseCase { newTimers ->
+            _uiState.update {
+                it.copy(timers = newTimers)
+            }
         }
     }
 
@@ -64,9 +62,9 @@ class MainViewModel : KoinComponent {
     }
 
     fun removeTimer(timer: Timer) = viewModelScope.launch {
-        withContext(Dispatchers.IO) {
-            timersRepository.removeTimer(timer)
-        }
-        loadTimers()
+        removeTimerUseCase(
+            timer,
+            ::loadTimers
+        )
     }
 }
