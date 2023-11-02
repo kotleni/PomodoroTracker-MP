@@ -37,10 +37,9 @@ class MainScreen : Screen {
         val navigator = LocalNavigator.currentOrThrow
 
         val viewModel = remember { MainViewModel() }
-        val timers by viewModel.timers.collectAsState()
+        val uiState by viewModel.uiState.collectAsState()
 
         var isShowCreateDialog by remember { mutableStateOf(false) }
-        val activeTimer by viewModel.activeTimer.collectAsState()
 
         val lazyListState = rememberLazyListState()
 
@@ -64,13 +63,12 @@ class MainScreen : Screen {
             LazyColumn(
                 state = lazyListState,
             ) {
-                items(timers, key = { it.id }) {
+                items(uiState.timers, key = { it.id }) {
                     TimerItem(
                         timer = it,
-                        isActive = it.id == activeTimer?.id,
+                        isActive = it.id == uiState.activeTimer?.id,
                         onItemSelected = {
                             navigator.push(TimerScreen(it.id.toInt()))
-                            //rootNavController.navigate("timer/${it.id}")
                         },
                         onItemRemoved = {
                             viewModel.removeTimer(it)

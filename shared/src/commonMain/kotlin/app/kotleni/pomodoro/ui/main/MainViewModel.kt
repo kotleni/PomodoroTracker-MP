@@ -1,49 +1,53 @@
 package app.kotleni.pomodoro.ui.main
 
 import TimerServiceImpl
+import app.kotleni.pomodoro.DatabaseDriverFactory
 import app.kotleni.pomodoro.Timer
 import app.kotleni.pomodoro.TimerService
 import app.kotleni.pomodoro.repositories.TimersRepository
 import app.kotleni.pomodoro.repositories.TimersRepositoryImpl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import kotlin.random.Random
-import app.kotleni.pomodoro.DatabaseDriverFactory
+
+data class MainUIState(
+    val timers: List<Timer> = listOf(),
+    val activeTimer: Timer? = null
+)
 
 class MainViewModel : KoinComponent {
     private val viewModelScope = CoroutineScope(Dispatchers.Default)
     private val databaseDriverFactory: DatabaseDriverFactory by inject()
     private val timersRepository: TimersRepository = TimersRepositoryImpl(databaseDriverFactory)
 
-    private val _timers: MutableStateFlow<List<Timer>> = MutableStateFlow(listOf())
-    val timers: StateFlow<List<Timer>> = _timers
+    private val _uiState: MutableStateFlow<MainUIState> = MutableStateFlow(MainUIState())
+    val uiState: StateFlow<MainUIState> = _uiState
 
-    private val _activeTimer: MutableStateFlow<Timer?> = MutableStateFlow(null)
-    val activeTimer: StateFlow<Timer?> = _activeTimer
-
-    //private val timerServiceFactory: TimerServiceFactory by inject()
     private var service: TimerService = TimerServiceImpl()
 
     fun loadTimers() = viewModelScope.launch {
-        _timers.value = withContext(Dispatchers.IO) {
-            timersRepository.fetchTimers()
+        _uiState.update {
+            it.copy(timers = withContext(Dispatchers.IO) {
+                timersRepository.fetchTimers()
+            })
         }
     }
 
     fun bindToService() {
-        //service = timerServiceFactory.createTimerService()
         loadActiveTimer()
     }
 
     fun loadActiveTimer() {
-        _activeTimer.value = service?.getTimer()
+        _uiState.update {
+            it.copy(activeTimer = service.getTimer())
+        }
     }
 
     fun createTimer(name: String, iconId: Int, workTime: Int, sbrakeTime: Int, lbrakeTime: Int) = viewModelScope.launch {
