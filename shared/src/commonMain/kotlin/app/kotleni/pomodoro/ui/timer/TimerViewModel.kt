@@ -7,9 +7,9 @@ import app.kotleni.pomodoro.TimerListener
 import app.kotleni.pomodoro.TimerService
 import app.kotleni.pomodoro.TimerStage
 import app.kotleni.pomodoro.TimerState
+import app.kotleni.pomodoro.ViewModel
 import app.kotleni.pomodoro.repositories.TimersRepository
 import app.kotleni.pomodoro.repositories.TimersRepositoryImpl
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,8 +26,7 @@ data class TimerUIState(
     val currentSeconds: Int = 0
 )
 
-class TimerViewModel : KoinComponent, TimerListener {
-    private val viewModelScope = CoroutineScope(Dispatchers.Default)
+class TimerViewModel : ViewModel(), KoinComponent, TimerListener {
     private val databaseDriverFactory: DatabaseDriverFactory by inject()
     private val timersRepository: TimersRepository = TimersRepositoryImpl(databaseDriverFactory)
 

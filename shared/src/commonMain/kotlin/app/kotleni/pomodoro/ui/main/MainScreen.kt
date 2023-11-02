@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import app.kotleni.pomodoro.stateMachine
 import app.kotleni.pomodoro.ui.timer.TimerScreen
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -36,7 +37,7 @@ class MainScreen : Screen {
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
 
-        val viewModel = remember { MainViewModel() }
+        val viewModel = stateMachine<MainViewModel>()
         val uiState by viewModel.uiState.collectAsState()
 
         var isShowCreateDialog by remember { mutableStateOf(false) }

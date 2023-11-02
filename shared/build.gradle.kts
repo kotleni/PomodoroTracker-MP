@@ -29,6 +29,7 @@ kotlin {
 
                 val koinVersion = extra["koin.version"] as String
                 implementation("io.insert-koin:koin-core:$koinVersion")
+                implementation("io.insert-koin:koin-compose:1.1.0")
             }
         }
         val androidMain by getting {
@@ -41,6 +42,7 @@ kotlin {
 
                 val koinVersion = extra["koin.version"] as String
                 implementation("io.insert-koin:koin-android:$koinVersion")
+                implementation("io.insert-koin:koin-androidx-compose:3.5.0")
             }
         }
         val desktopMain by getting {

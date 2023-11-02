@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import app.kotleni.pomodoro.TimerStage
 import app.kotleni.pomodoro.TimerState
+import app.kotleni.pomodoro.stateMachine
 import app.kotleni.pomodoro.toTimeString
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -53,7 +54,7 @@ class TimerScreen(val timerId: Int) : Screen {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
-        val viewModel: TimerViewModel = remember { TimerViewModel() }
+        val viewModel = stateMachine<TimerViewModel>()
         val uiState by viewModel.uiState.collectAsState()
 
         var isShowWarningDialog by remember { mutableStateOf(false) }

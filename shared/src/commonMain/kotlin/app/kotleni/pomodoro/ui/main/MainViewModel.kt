@@ -3,30 +3,26 @@ package app.kotleni.pomodoro.ui.main
 import TimerServiceImpl
 import app.kotleni.pomodoro.Timer
 import app.kotleni.pomodoro.TimerService
+import app.kotleni.pomodoro.ViewModel
 import app.kotleni.pomodoro.usecases.CreateTimerUseCase
 import app.kotleni.pomodoro.usecases.FetchTimersUseCase
 import app.kotleni.pomodoro.usecases.RemoveTimerUseCase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 
 data class MainUIState(
     val timers: List<Timer> = listOf(),
     val activeTimer: Timer? = null
 )
 
-class MainViewModel : KoinComponent {
-    private val createTimerUseCase: CreateTimerUseCase by inject()
-    private val removeTimerUseCase: RemoveTimerUseCase by inject()
-    private val fetchTimersUseCase: FetchTimersUseCase by inject()
-
-    private val viewModelScope = CoroutineScope(Dispatchers.Default)
-
+class MainViewModel(
+    val createTimerUseCase: CreateTimerUseCase,
+    val removeTimerUseCase: RemoveTimerUseCase,
+    val fetchTimersUseCase: FetchTimersUseCase
+) : ViewModel(), KoinComponent {
     private val _uiState: MutableStateFlow<MainUIState> = MutableStateFlow(MainUIState())
     val uiState: StateFlow<MainUIState> = _uiState
 
