@@ -23,7 +23,7 @@ fun IconSelectorItem(icon: ImageVector, isSelected: Boolean, onSelected: () -> U
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
-                .background(if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer)
+                .background(if (!isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.primary)
                 .clickable {
                     onSelected()
                 }
@@ -33,7 +33,7 @@ fun IconSelectorItem(icon: ImageVector, isSelected: Boolean, onSelected: () -> U
                     .padding(16.dp),
                 imageVector = icon,
                 contentDescription = "",
-                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimaryContainer)
+                colorFilter = ColorFilter.tint(if (!isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onPrimary)
             )
         }
     }
