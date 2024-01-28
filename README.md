@@ -1,2 +1,2 @@
-## PomodoroTracker (experimental branch)
-This branch contains experimental code of multiplatform desktop and android work time tracker.
+## PomodoroTracker
+This branch contains experimental code of multiplatform desktop and Android work time tracker.
